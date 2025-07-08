@@ -20,11 +20,11 @@ def back_stats_markup(_):
         [
             [
                 InlineKeyboardButton(
-                    text=_["BACK_BUTTON"],
+                    text=_["Geri🔙"],
                     callback_data="TOPMARKUPGET",
                 ),
                 InlineKeyboardButton(
-                    text=_["CLOSE_BUTTON"],
+                    text=_["Bağla🔚"],
                     callback_data="close",
                 ),
             ],
@@ -37,11 +37,11 @@ def overallback_stats_markup(_):
         [
             [
                 InlineKeyboardButton(
-                    text=_["BACK_BUTTON"],
+                    text=_["Geri🔚"],
                     callback_data="GlobalStats",
                 ),
                 InlineKeyboardButton(
-                    text=_["CLOSE_BUTTON"],
+                    text=_["Bağla🔚"],
                     callback_data="close",
                 ),
             ],
@@ -52,17 +52,17 @@ def overallback_stats_markup(_):
 def get_stats_markup(_, status):
     not_sudo = [
         InlineKeyboardButton(
-            text=_["CLOSEMENU_BUTTON"],
+            text=_["Bağla🔚"],
             callback_data="close",
         )
     ]
     sudo = [
         InlineKeyboardButton(
-            text=_["SA_B_8"],
+            text=_["Sudo"],
             callback_data="bot_stats_sudo g",
         ),
         InlineKeyboardButton(
-            text=_["CLOSEMENU_BUTTON"],
+            text=_["Bağla🔚"],
             callback_data="close",
         ),
     ]
@@ -76,7 +76,7 @@ def get_stats_markup(_, status):
             ],
             [
                 InlineKeyboardButton(
-                    text=_["SA_B_6"],
+                    text=_["Stat"],
                     url=f"https://t.me/{app.username}?start=stats",
                 ),
                 InlineKeyboardButton(
