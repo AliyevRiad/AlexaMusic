@@ -1,48 +1,3 @@
-# Copyright (C) 2025 by Alexa_Help @ Github, < https://github.com/TheTeamAlexa >
-# Subscribe On YT < Jankari Ki Duniya >. All rights reserved. © Alexa © Yukki.
-
-"""
-TheTeamAlexa is a project of Telegram bots with variety of purposes.
-Copyright (c) 2021 ~ Present Team Alexa <https://github.com/TheTeamAlexa>
-
-This program is free software: you can redistribute it and can modify
-as you want or you can collabe if you have new ideas.
-"""
-
-
-import asyncio
-
-from pyrogram import filters
-from pyrogram import enums, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from youtubesearchpython.__future__ import VideosSearch
-
-import config
-from config import BANNED_USERS
-from config.config import OWNER_ID
-from strings import get_command, get_string
-from AlexaMusic import Telegram, YouTube, app
-from AlexaMusic.misc import SUDOERS
-from AlexaMusic.plugins.play.playlist import del_plist_msg
-from AlexaMusic.plugins.sudo.sudoers import sudoers_list
-from AlexaMusic.utils.database import (
-    add_served_chat,
-    is_served_user,
-    add_served_user,
-    blacklisted_chats,
-    get_assistant,
-    get_lang,
-    get_userss,
-    is_on_off,
-    is_served_private_chat,
-)
-from AlexaMusic.utils.decorators.language import LanguageStart
-from AlexaMusic.utils.inline import help_pannel, private_panel, start_pannel
-from AlexaMusic.utils.command import commandpro
-
-loop = asyncio.get_running_loop()
-
-
 @app.on_message(
     filters.command(get_command("START_COMMAND")) & filters.private & ~BANNED_USERS
 )
@@ -195,12 +150,12 @@ async def start_comm(client, message: Message, _):
                 )
             except Exception:
                 await message.reply_text(
-                    caption=_["start_2"].format(message.from_user.mention, app.mention),
+                    text=_["start_2"].format(message.from_user.mention, app.mention),
                     reply_markup=InlineKeyboardMarkup(out),
                 )
         else:
             await message.reply_text(
-                caption=_["start_2"].format(message.from_user.mention, app.mention),
+                text=_["start_2"].format(message.from_user.mention, app.mention),
                 reply_markup=InlineKeyboardMarkup(out),
             )
         if await is_on_off(config.LOG):
@@ -209,97 +164,4 @@ async def start_comm(client, message: Message, _):
             return await app.send_message(
                 config.LOG_GROUP_ID,
                 f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ʏᴏᴜʀ ʙᴏᴛ.\n\n**ᴜsᴇʀ ɪᴅ:** {sender_id}\n**ᴜsᴇʀɴᴀᴍᴇ:** {sender_name}",
-            )
-
-
-@app.on_message(
-    filters.command(get_command("START_COMMAND")) & filters.group & ~BANNED_USERS
-)
-@LanguageStart
-async def testbot(client, message: Message, _):
-    out = start_pannel(_)
-    return await message.reply_text(
-        _["start_1"].format(message.chat.title, config.MUSIC_BOT_NAME),
-        reply_markup=InlineKeyboardMarkup(out),
-    )
-
-
-welcome_group = 2
-
-
-@app.on_message(filters.new_chat_members, group=welcome_group)
-async def welcome(client, message: Message):
-    chat_id = message.chat.id
-    if config.PRIVATE_BOT_MODE == str(True):
-        if not await is_served_private_chat(message.chat.id):
-            await message.reply_text(
-                "**ᴩʀɪᴠᴀᴛᴇ ᴍᴜsɪᴄ ʙᴏᴛ**\n\nᴏɴʟʏ ғᴏʀ ᴛʜᴇ ᴄʜᴀᴛs ᴀᴜᴛʜᴏʀɪsᴇᴅ ʙʏ ᴍʏ ᴏᴡɴᴇʀ, ʀᴇǫᴜᴇsᴛ ɪɴ ᴍʏ ᴏᴡɴᴇʀ's ᴩᴍ ᴛᴏ ᴀᴜᴛʜᴏʀɪsᴇ ʏᴏᴜʀ ᴄʜᴀᴛ ᴀɴᴅ ɪғ ʏᴏᴜ ᴅᴏɴ'ᴛ ᴡᴀɴᴛ ᴛᴏ ᴅᴏ sᴏ ᴛʜᴇɴ ғᴜ*ᴋ ᴏғғ ʙᴇᴄᴀᴜsᴇ ɪ'ᴍ ʟᴇᴀᴠɪɴɢ."
-            )
-            return await app.leave_chat(message.chat.id)
-    else:
-        await add_served_chat(chat_id)
-    for member in message.new_chat_members:
-        try:
-            language = await get_lang(message.chat.id)
-            _ = get_string(language)
-            if member.id == app.id:
-                chat_type = message.chat.type
-                if chat_type != enums.ChatType.SUPERGROUP:
-                    await message.reply_text(_["start_6"])
-                    return await app.leave_chat(message.chat.id)
-                if chat_id in await blacklisted_chats():
-                    await message.reply_text(
-                        _["start_7"].format(
-                            f"https://t.me/{app.username}?start=sudolist"
-                        )
-                    )
-                    return await app.leave_chat(chat_id)
-                userbot = await get_assistant(message.chat.id)
-                out = start_pannel(_)
-                await message.reply_text(
-                    _["start_3"].format(
-                        config.MUSIC_BOT_NAME,
-                        userbot.username,
-                        userbot.id,
-                    ),
-                    reply_markup=InlineKeyboardMarkup(out),
-                )
-            if member.id in config.OWNER_ID:
-                return await message.reply_text(
-                    _["start_4"].format(config.MUSIC_BOT_NAME, member.mention)
-                )
-            if member.id in SUDOERS:
-                return await message.reply_text(
-                    _["start_5"].format(config.MUSIC_BOT_NAME, member.mention)
-                )
-            return
-        except:
-            return
-
-
-@app.on_message(commandpro(["/alive", "Alexa"]))
-async def alive(client, message: Message):
-    await message.reply_photo(
-        photo="https://telegra.ph/file/125f531d44a9999290cac.jpg",
-        caption=f"""━━━━━━━━━━━━━━━━━━━━━━━━\n\n✪ ʜᴇʟʟᴏ, ᴀʟᴇxᴀ ɪs ᴡᴏʀᴋɪɴɢ ᴀɴᴅ ғᴜɴᴄᴛɪᴏɴɪɴɢ ᴘʀᴏᴘᴇʀʟʏ\n✪ ᴛʜᴀɴᴋs ᴛᴏ ʏᴜᴋᴋɪ ᴛᴇᴀᴍ 🌼 ..\n\n┏━━━━━━━━━━━━━━━━━┓\n┣★ ᴏᴡɴᴇʀ    : [ᴀsᴀᴅ ᴀʟɪ](https://t.me/Dr_Asad_Ali)\n┣★ ᴜᴘᴅᴀᴛᴇs › : [ᴀʟᴇxᴀ ʜᴇʟᴘ](https://t.me/Alexa_BotUpdates)┓\n┣★ ʀᴇᴘᴏ › : [ᴀʟᴇxᴀ ʀᴇᴘᴏ](https://github.com/jankarikiduniya/AlexaMusic)\n┗━━━━━━━━━━━━━━━━━┛\n\n💞 ɪғ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ǫᴜᴇsᴛɪᴏɴs ᴛʜᴇɴ\nᴅᴍ ᴛᴏ ᴍʏ [ᴏᴡɴᴇʀ](https://t.me/Jankari_Ki_Duniya) ᴍᴀᴋᴇ sᴜʀᴇ ᴛᴏ sᴛᴀʀ ᴏᴜʀ ᴘʀᴏᴊᴇᴄᴛ ...\n\n━━━━━━━━━━━━━━━━━━━━━━━━""",
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("🌼 ᴀʟᴇxᴀ ᴄʜᴀᴛ 💮", url=config.SUPPORT_GROUP)]]
-        ),
-    )
-
-
-@app.on_message(commandpro(["/verify", "alexaverification"]))
-async def verify(client, message: Message):
-    if await is_served_user(message.from_user.id):
-        await message.reply_text(
-            text="😂 ᴅᴇᴀʀ ʏᴏᴜ ᴀʀᴇ ᴀʟʀᴇᴀᴅʏ ᴠᴇʀɪғɪᴇᴅ",
-        )
-        return
-    await add_served_user(message.from_user.id)
-    await message.reply_photo(
-        photo="https://telegra.ph/file/7f08acd78577f99f60ff5.png",
-        caption=f"""━━━━━━━━━━━━━━━━━━━━━━━━\n\n✪ **ᴄᴏɴɢʀᴀᴛᴜʟᴀᴛɪᴏɴ** 🎉\n✪ ɴᴏᴡ ʏᴏᴜ ᴀʀᴇ ᴀʟᴇxᴀ ᴠᴇʀɪғɪᴇᴅ ᴍᴇᴍʙᴇʀ ɢᴏ ʙᴀᴄᴋ ᴀɴᴅ ᴇɴᴊᴏʏ ᴏᴜʀ sᴇʀᴠɪᴄᴇ ᴀɴᴅ ᴘʟᴀʏ ᴍᴜsɪᴄ 🌼 ..\n\n━━━━━━━━━━━━━━━━━━━━━━━━""",
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("🌼 ᴀʟᴇxᴀ ᴄʜᴀᴛ 💮", url=config.SUPPORT_GROUP)]]
-        ),
-    )
+                            )
